@@ -21,7 +21,7 @@ mlp_sgd.add(Dense(units=512,activation='tanh',input_shape=(784,)))
 mlp_sgd.add(Dense(units=10,activation='softmax'))
 
 mlp_sgd.compile(loss='MSE',optimizer=SGD(learning_rate=0.01),metrics=['accuracy']) # 학습률 0.01
-hist_sgd=mlp_sgd.fit(x_train,y_train,batch_size=128,epochs=50,validation_data=(x_test,y_test),verbose=2)
+hist_sgd=mlp_sgd.fit(x_train,y_train,batch_size=128,epochs=50,validation_data=(x_test,y_test),verbose=2) # verbose : 0 생략, 1 간단, 2 자세히 
 # fit 함수는 매 세대 마다 손실 함숫값과 정확률을 측정하여 딕셔너리 형태로 반환 
 # loss : [], accuracy : [], # 훈련 집합에 대한 손실 함숫값과 정확률
 # val_loss : [], val_accuracy :[]  # 검증 집합에 대한 내용  epochs 값 만큼 저장됨 
@@ -39,7 +39,7 @@ print('Adam 정확률=',mlp_adam.evaluate(x_test,y_test,verbose=0)[1]*100)
 # 비교 그래프 생성 
 import matplotlib.pyplot as plt
 
-plt.plot(hist_sgd.history['accuracy'],'r--')
+plt.plot(hist_sgd.history['accuracy'],'r--') # 빨간색 점선을 의미 
 plt.plot(hist_sgd.history['val_accuracy'],'r')
 plt.plot(hist_adam.history['accuracy'],'b--')
 plt.plot(hist_adam.history['val_accuracy'],'b')
