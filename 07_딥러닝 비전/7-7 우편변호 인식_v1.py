@@ -17,8 +17,8 @@ def reset(): # 초기화 함수 -> 박스 지우기
 def grab_numerals():# 5개 숫자를 떼어냄 
     numerals=[]
     for i in range(5): # 각 박스에서 숫자를 떼냄 
-        roi=img[51:149,11+i*100:9+(i+1)*100,0]
-        roi=255-cv.resize(roi,(28,28),interpolation=cv.INTER_CUBIC)
+        roi=img[51:149, 11+i*100:9+(i+1)*100, 0] #  ROI(Region Of Interest)를 잘라내기 위한 슬라이싱 
+        roi=255-cv.resize(roi,(28,28), interpolation=cv.INTER_CUBIC) # 색상 반전 수행
         numerals.append(roi)  
     numerals=np.array(numerals) # 각 박스에 대한 숫자 28*28 크기 정보 저장 
     return numerals
@@ -35,7 +35,7 @@ def show(): # 박스에서 숫자를 명암영상으로 표시
 def recognition(): # 모델이 인식 하여 예측 
     numerals=grab_numerals()
     numerals=numerals.reshape(5,784) # 2차원 -> 1차원으로 펼치기
-    numerals=numerals.astype(np.float32)/255.0 # 0,1 범위로 변환
+    numerals=numerals.astype(np.float32)/255.0 # 0,1 범위로 변환(정규화)
     res=model.predict(numerals) # 신경망 모델로 예측 후 결과 저장 : 5*10배열
     class_id=np.argmax(res,axis=1) # 예측값의 최대값의 인덱스를 찾아 저장 
     for i in range(5): # 인식 결과(예측 결과) 화면에 표시 
