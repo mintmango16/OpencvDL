@@ -6,6 +6,8 @@ from tensorflow.keras.utils import image_dataset_from_directory # 폴더에서 �
 import pathlib # 폴더 다루는 모듈
 import os 
 import tensorflow as tf
+import time
+from tensorflow.keras.callbacks import Callback
  # DenseNet121 모델과 데이터셋의 크기가 커서 폴더에서 영상을 읽어 메인 메모리에 적재해 사용하는 방식 이용 
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
@@ -14,7 +16,26 @@ if gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
     except RuntimeError as e:
         print(e)
-        
+
+
+
+# 시간을 측정하는 커스텀 콜백 클래스 정의
+class TimingCallback(Callback):
+    def on_train_begin(self, logs=None):
+        self.start_time = time.time()
+        print("훈련이 시작되었습니다...")
+
+    def on_train_end(self, logs=None):
+        total_time = time.time() - self.start_time
+        print(f"\n총 훈련 시간: {total_time / 60:.2f} 분 ({total_time:.2f} 초)")
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.epoch_start_time = time.time()
+
+    def on_epoch_end(self, epoch, logs=None):
+        epoch_time = time.time() - self.epoch_start_time
+        print(f" - 에포크 {epoch+1} 소요 시간: {epoch_time:.2f}초")
+
 data_path=pathlib.Path('datasets/stanford_dogs/images')  # Stanford dogs 데이터셋의 폴더 위치 지정 
 
 train_ds=image_dataset_from_directory(data_path, #데이터 저장 경로 지정
@@ -41,10 +62,16 @@ cnn.add(Dense(1024,activation='relu'))
 cnn.add(Dropout(0.75)) # 드롭아웃층 
 cnn.add(Dense(units=120,activation='softmax')) # 부류가 120개 -> unit 120 설정 
 
-cnn.compile(loss='sparse_categorical_crossentropy',optimizer=Adam(learning_rate=0.000001),metrics=['accuracy'])
-hist=cnn.fit(train_ds,epochs=200,validation_data=test_ds,verbose=2)
+cnn.compile(loss='sparse_categorical_crossentropy', optimizer=Adam(learning_rate=0.000001), metrics=['accuracy'])
 
-os.chdir("08_")
+# fit 함수를 호출할 때 callbacks 리스트에 우리가 만든 콜백을 추가
+hist = cnn.fit(train_ds,
+               epochs=200,
+               validation_data=test_ds,
+               verbose=2,
+               callbacks=[TimingCallback()]) # 콜백 적용
+
+
 print('정확률=',cnn.evaluate(test_ds,verbose=0)[1]*100)
 
 cnn.save('cnn_for_stanford_dogs.h5')	# 미세 조정된 모델을 파일에 저장
@@ -73,3 +100,6 @@ plt.xlabel('Epoch')
 plt.legend(['Train','Validation'])
 plt.grid()
 plt.show()
+
+# 총 훈련 시간: 344.47 분 (20667.91 초)
+# 정확률= 82.14285969734192

@@ -1,6 +1,8 @@
 import numpy as np
 import cv2 as cv
 import sys
+import os
+os.chdir("09_인식")
 
 def construct_yolo_v3():
     f=open('coco_names.txt', 'r')
@@ -19,7 +21,7 @@ def yolo_detect(img,yolo_model,out_layers):
     yolo_model.setInput(test_img)
     output3=yolo_model.forward(out_layers)
     
-    box,conf,id=[],[],[]		# 박스, 신뢰도, 부류 번호
+    box,conf,id=[],[],[]		# 박스, 신뢰도, 부류 번호ㅂ
     for output in output3:
         for vec85 in output:
             scores=vec85[5:]
@@ -43,10 +45,6 @@ colors=np.random.uniform(0,255,size=(len(class_names),3))	# 부류마다 색깔
 cap=cv.VideoCapture(0,cv.CAP_DSHOW)
 if not cap.isOpened(): sys.exit('카메라 연결 실패')
 
-import time
-
-start=time.time()
-n_frame=0
 while True:
     ret,frame=cap.read()
     if not ret: sys.exit('프레임 획득에 실패하여 루프를 나갑니다.')
@@ -60,13 +58,9 @@ while True:
         cv.putText(frame,text,(x1,y1+30),cv.FONT_HERSHEY_PLAIN,1.5,colors[id],2)
     
     cv.imshow("Object detection from video by YOLO v.3",frame)
-    n_frame+=1
     
     key=cv.waitKey(1) 
     if key==ord('q'): break 
-
-end=time.time()
-print('처리한 프레임 수=',n_frame,', 경과 시간=',end-start,'\n초당 프레임 수=',n_frame/(end-start))
-
+    
 cap.release()		# 카메라와 연결을 끊음
 cv.destroyAllWindows()

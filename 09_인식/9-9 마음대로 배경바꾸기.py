@@ -12,7 +12,7 @@ class VideoSpecialEffect(QMainWindow):
        
         videoButton=QPushButton('배경 내 맘대로 켜기',self)
         self.pickCombo=QComboBox(self)     
-        self.pickCombo.addItems(['원래 영상','흐릿(조금)','흐릿(중간)','흐릿(많이)','빨강','녹색','파랑'])
+        self.pickCombo.addItems(['원래 영상','흐릿(조금)','흐릿(중간)','흐릿(많이)','빨강','녹색','파랑']) # 콤보박스 메뉴 지정 
         quitButton=QPushButton('나가기',self)        
         
         videoButton.setGeometry(10,10,140,30)
@@ -31,20 +31,21 @@ class VideoSpecialEffect(QMainWindow):
             if not ret: break
 
             pick_effect=self.pickCombo.currentIndex()        
-            if pick_effect==0:
+            if pick_effect==0: # 원래 영상 
                 special_img=frame
             elif pick_effect==1:
-                special_img=change_bg.blur_frame(frame,low=True,detect='person')
+                # detect='person' : person 이외에는 모두 배경으로 간주 
+                special_img=change_bg.blur_frame(frame,low=True,detect='person') # 흐릿하게(조금)
             elif pick_effect==2:
-                special_img=change_bg.blur_frame(frame,moderate=True,detect='person')
+                special_img=change_bg.blur_frame(frame,moderate=True,detect='person') # 흐릿하게(중간)
             elif pick_effect==3:    
-                special_img=change_bg.blur_frame(frame,extreme=True,detect='person')
+                special_img=change_bg.blur_frame(frame,extreme=True,detect='person') # 흐릿하게(많이)
             elif pick_effect==4:    
-                special_img=change_bg.color_frame(frame,colors=(255,0,0),detect='person')
+                special_img=change_bg.color_frame(frame,colors=(255,0,0),detect='person') # 빨강 
             elif pick_effect==5:    
-                special_img=change_bg.color_frame(frame,colors=(0,255,0),detect='person')
+                special_img=change_bg.color_frame(frame,colors=(0,255,0),detect='person') # 초록
             elif pick_effect==6:    
-                special_img=change_bg.color_frame(frame,colors=(0,0,255),detect='person')
+                special_img=change_bg.color_frame(frame,colors=(0,0,255),detect='person') # 파랑 
                 
             cv.imshow('Special effect',special_img)              
             cv.waitKey(1) 
@@ -55,7 +56,7 @@ class VideoSpecialEffect(QMainWindow):
         self.close()
 
 change_bg=alter_bg(model_type="pb")
-change_bg.load_pascalvoc_model('xception_pascalvoc.pb')
+change_bg.load_pascalvoc_model('xception_pascalvoc.pb') #물체를 분할하고 배경을 바꾸는데 쓸 모델 로드
                 
 app=QApplication(sys.argv) 
 win=VideoSpecialEffect() 

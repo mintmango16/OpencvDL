@@ -59,6 +59,7 @@ def make_model(img_size,num_classes):
         x=layers.MaxPooling2D(3,strides=2,padding='same')(x)
         residual=layers.Conv2D(filters,1,strides=2,padding='same')(previous_block_activation)
         x=layers.add([x,residual])	# 지름길 연결  
+        .0
         previous_block_activation=x	# 지름길 연결을 위해
 
     # U-net의 업 샘플링(확대 경로)
