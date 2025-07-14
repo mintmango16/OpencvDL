@@ -1,0 +1,17 @@
+
+# 모델 관련 파일 
+*.h5
+*.txt
+*.pkl
+*.pb
+*.cfg
+*.weights
+*.pyc
+
+
+# 기타 파일
+*.mp4
+
+
+# 데이터셋 무시 
+**/datasets/
