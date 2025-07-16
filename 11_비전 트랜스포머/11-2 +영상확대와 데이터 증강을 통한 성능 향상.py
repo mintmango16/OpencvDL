@@ -79,12 +79,15 @@ model=create_vit_classifier()
 model.layers[1].adapt(x_train)
 
 model.compile(optimizer=Adam(),loss=SparseCategoricalCrossentropy(from_logits=True),metrics=['accuracy'])
-hist=model.fit(x_train,y_train,batch_size=128,epochs=100,validation_data=(x_test,y_test),verbose=1)
+hist=model.fit(x_train,y_train,batch_size=128,epochs=10,validation_data=(x_test,y_test),verbose=1)
 
 res=model.evaluate(x_test,y_test,verbose=0)
 print('정확률=',res[1]*100)
 
 import matplotlib.pyplot as plt
+
+import os
+os.chdir("11_비전 트랜스포머")
 
 plt.plot(hist.history['accuracy'])
 plt.plot(hist.history['val_accuracy'])
@@ -93,7 +96,8 @@ plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
 plt.legend(['Train','Validation'])
 plt.grid()
-plt.show()
+plt.savefig('11-2 accuracy_graph.png') # 그래프를 'accuracy_graph.png' 파일로 저장
+plt.clf() # 다음 그래프를 위해 현재 그림을 초기화
 
 plt.plot(hist.history['loss'])
 plt.plot(hist.history['val_loss'])
@@ -102,6 +106,10 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train','Validation'])
 plt.grid()
-plt.show()
-
+plt.savefig('11-2 loss_graph.png') # 그래프를 'loss_graph.png' 파일로 저장
+plt.clf() # 그림 초기화
     
+    
+# Epoch 10/10
+# 391/391 ━━━━━━━━━━━━━━━━━━━━ 10s 25ms/step - accuracy: 0.6208 - loss: 1.0771 - val_accuracy: 0.6810 - val_loss: 0.9086
+# 정확률= 68.09999942779541
